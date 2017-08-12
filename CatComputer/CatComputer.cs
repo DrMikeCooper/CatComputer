@@ -13,6 +13,7 @@ namespace CatComputer
         public int numSessions = 100;
         public float pWander = 33.3f; // chance of each cat wandering instead of playing
         CatData data = new CatData();
+        int catCost = 1000;
 
         // dynamic data during the run
         public class Room
@@ -30,6 +31,7 @@ namespace CatComputer
         int xp; // earned by playing with cats. Automatically levels you up and opens up new rooms 
         int coin; // money
         int hardware; // todo subdivide this later into screws, wood etc.
+        int sessionNumber;
 
         // other useful stuff
         Random dice = new Random();
@@ -41,10 +43,20 @@ namespace CatComputer
         public int[] levelHistory;
         public int[] catsHistory;
         public int[] roomsHistory;
+        public List<string> events = new List<string>();
 
         // do the entire run
         public void Run()
         {
+            level = 0;
+            numCats = 1;
+            rooms.Clear();
+            toys.Clear();
+            xp = 0;
+            coin = 0;
+            hardware = 0;
+            events.Clear();
+
             coinHistory = new int[numSessions];
             hardwareHistory = new int[numSessions];
             xpHistory = new int[numSessions];
@@ -58,6 +70,7 @@ namespace CatComputer
             file.WriteLine("Session,Level,Rooms,Cats,Coin,Hardware, XP");
             for (int i = 0; i < numSessions; i++)
             {
+                sessionNumber = i+1;
                 RunSession();
                 file.WriteLine("" + i +"," +  level + "," + GetNumRooms() + "," + numCats + "," + coin + "," + hardware + "," + xp);
                 coinHistory[i] = coin;
@@ -123,12 +136,21 @@ namespace CatComputer
             if (dice.Next(0, 100) < data.pctNewCat && numCats < CatCapacity())
             {
                 numCats++;
+                events.Add("" + sessionNumber + ": Found a cat!");
             }
         }
 
         // do what a good player would do with their coin and resources
         void SpendResources()
         {
+            // can we buy a new cat?
+            if (numCats < CatCapacity() && coin > catCost)
+            {
+                coin -= catCost;
+                numCats++;
+                events.Add("" + sessionNumber + ": Bought a cat!");
+            }
+
             // automatic - have we levelled up?
             if (xp > data.GetXpForLevel(level))
             {
@@ -141,6 +163,7 @@ namespace CatComputer
                         data.GetCoinForRoom(rooms.Count),
                         data.GetHardwareForRoom(rooms.Count));
                     rooms.Add(r);
+                    events.Add("" + sessionNumber + ": Room " + rooms.Count + " unlocked!");
                 }
             }
 
@@ -156,6 +179,7 @@ namespace CatComputer
                         hardware -= r.hardWareToUnlock;
                         r.coinToUnlock = 0;
                         r.hardWareToUnlock = 0;
+                        events.Add("" + sessionNumber + ": Room " + i + " finished!");
                     }
                     break;
                 }

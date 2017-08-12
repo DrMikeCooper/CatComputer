@@ -29,12 +29,15 @@
         private void InitializeComponent()
         {
             this.GoButton = new System.Windows.Forms.Button();
-            this.graphCoin = new CatControls.CatGraph();
-            this.graphXP = new CatControls.CatGraph();
-            this.graphHardware = new CatControls.CatGraph();
+            this.trackBarTime = new System.Windows.Forms.TrackBar();
+            this.listBoxEvents = new System.Windows.Forms.ListBox();
             this.graphLevel = new CatControls.CatGraph();
             this.graphRooms = new CatControls.CatGraph();
             this.graphCats = new CatControls.CatGraph();
+            this.graphHardware = new CatControls.CatGraph();
+            this.graphCoin = new CatControls.CatGraph();
+            this.graphXP = new CatControls.CatGraph();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarTime)).BeginInit();
             this.SuspendLayout();
             // 
             // GoButton
@@ -47,32 +50,23 @@
             this.GoButton.UseVisualStyleBackColor = true;
             this.GoButton.Click += new System.EventHandler(this.GoButton_Click);
             // 
-            // graphCoin
+            // trackBarTime
             // 
-            this.graphCoin.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.graphCoin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.graphCoin.Location = new System.Drawing.Point(243, 12);
-            this.graphCoin.Name = "graphCoin";
-            this.graphCoin.Size = new System.Drawing.Size(210, 168);
-            this.graphCoin.TabIndex = 2;
+            this.trackBarTime.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.trackBarTime.Location = new System.Drawing.Point(716, 322);
+            this.trackBarTime.Name = "trackBarTime";
+            this.trackBarTime.Size = new System.Drawing.Size(236, 45);
+            this.trackBarTime.TabIndex = 9;
+            this.trackBarTime.Scroll += new System.EventHandler(this.trackBarTime_Scroll);
             // 
-            // graphXP
+            // listBoxEvents
             // 
-            this.graphXP.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.graphXP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.graphXP.Location = new System.Drawing.Point(12, 12);
-            this.graphXP.Name = "graphXP";
-            this.graphXP.Size = new System.Drawing.Size(210, 168);
-            this.graphXP.TabIndex = 1;
-            // 
-            // graphHardware
-            // 
-            this.graphHardware.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.graphHardware.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.graphHardware.Location = new System.Drawing.Point(474, 12);
-            this.graphHardware.Name = "graphHardware";
-            this.graphHardware.Size = new System.Drawing.Size(210, 168);
-            this.graphHardware.TabIndex = 3;
+            this.listBoxEvents.FormattingEnabled = true;
+            this.listBoxEvents.Location = new System.Drawing.Point(716, 12);
+            this.listBoxEvents.Name = "listBoxEvents";
+            this.listBoxEvents.Size = new System.Drawing.Size(236, 290);
+            this.listBoxEvents.TabIndex = 10;
+            this.listBoxEvents.SelectedIndexChanged += new System.EventHandler(this.listBoxEvents_SelectedIndexChanged);
             // 
             // graphLevel
             // 
@@ -101,11 +95,41 @@
             this.graphCats.Size = new System.Drawing.Size(210, 168);
             this.graphCats.TabIndex = 4;
             // 
+            // graphHardware
+            // 
+            this.graphHardware.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.graphHardware.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.graphHardware.Location = new System.Drawing.Point(474, 12);
+            this.graphHardware.Name = "graphHardware";
+            this.graphHardware.Size = new System.Drawing.Size(210, 168);
+            this.graphHardware.TabIndex = 3;
+            // 
+            // graphCoin
+            // 
+            this.graphCoin.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.graphCoin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.graphCoin.Location = new System.Drawing.Point(243, 12);
+            this.graphCoin.Name = "graphCoin";
+            this.graphCoin.Size = new System.Drawing.Size(210, 168);
+            this.graphCoin.TabIndex = 2;
+            // 
+            // graphXP
+            // 
+            this.graphXP.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.graphXP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.graphXP.Location = new System.Drawing.Point(12, 12);
+            this.graphXP.Name = "graphXP";
+            this.graphXP.Size = new System.Drawing.Size(210, 168);
+            this.graphXP.TabIndex = 1;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(707, 426);
+            this.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.ClientSize = new System.Drawing.Size(1065, 426);
+            this.Controls.Add(this.listBoxEvents);
+            this.Controls.Add(this.trackBarTime);
             this.Controls.Add(this.graphLevel);
             this.Controls.Add(this.graphRooms);
             this.Controls.Add(this.graphCats);
@@ -115,7 +139,9 @@
             this.Controls.Add(this.GoButton);
             this.Name = "Form1";
             this.Text = "Cat Computer";
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarTime)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -128,6 +154,8 @@
         private CatControls.CatGraph graphLevel;
         private CatControls.CatGraph graphRooms;
         private CatControls.CatGraph graphCats;
+        private System.Windows.Forms.TrackBar trackBarTime;
+        private System.Windows.Forms.ListBox listBoxEvents;
     }
 }
 

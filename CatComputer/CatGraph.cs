@@ -14,6 +14,7 @@ namespace CatControls
     {
         public int[] data;
         public string label;
+        public int currentTime = 0;
 
         public CatGraph()
         {
@@ -24,6 +25,12 @@ namespace CatControls
         {
             label = l;
             data = d;
+            Invalidate();
+        }
+
+        public void SetCurrentTime(int t)
+        {
+            currentTime = Math.Max(0,Math.Min(t, data.Length-1));
             Invalidate();
         }
 
@@ -49,7 +56,7 @@ namespace CatControls
             float xScale = ((float)Width) / numPoints;
 
             e.Graphics.DrawString(label + ":" + maxVal, Control.DefaultFont, brush, new Point(5, 5));
-            Point p1, p2 = new Point();
+            Point p1 = new Point(), p2 = new Point();
             for (int i = 0; i < numPoints; i++)
             {
                 p1 = new Point((int)(i * xScale), Height - 1 - (int)(data[i] * yScale));
@@ -57,6 +64,12 @@ namespace CatControls
                     e.Graphics.DrawLine(pen, p2, p1);
                 p2 = p1;
             }
+            p1.X = p2.X = (int)(currentTime*xScale);
+            p1.Y = 0; p2.Y = Height;
+            e.Graphics.DrawLine(pen, p2, p1);
+
+            int currentVal = data[currentTime];
+            e.Graphics.DrawString("" + currentVal, Control.DefaultFont, brush, new Point(5, Height -25));
         }
     }
 }
