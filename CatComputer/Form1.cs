@@ -57,6 +57,8 @@ namespace CatComputer
             this.graphRooms.SetCurrentTime(time);
             this.graphHardware.SetCurrentTime(time);
             this.graphXP.SetCurrentTime(time);
+            trackBarTime.Value = time;
+            labelTime.Text = "" + time + "/" + trackBarTime.Maximum;
         }
     }
 }
