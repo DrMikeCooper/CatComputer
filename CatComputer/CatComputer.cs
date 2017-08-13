@@ -133,10 +133,17 @@ namespace CatComputer
             hardware += data.wanderHardware;
 
             // might pick up a new cat if we have space
-            if (dice.Next(0, 100) < data.pctNewCat && numCats < CatCapacity())
+            if (dice.Next(0, 100) < data.pctNewCat )
             {
-                numCats++;
-                events.Add("" + sessionNumber + ": Found a cat!");
+                if (numCats < CatCapacity())
+                {
+                    numCats++;
+                    events.Add("" + sessionNumber + ": Found a cat!");
+                }
+                else
+                {
+                    events.Add("" + sessionNumber + ": Turned away a stray!");
+                }
             }
         }
 
