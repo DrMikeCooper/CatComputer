@@ -27,6 +27,13 @@ namespace CatComputer
             return xpForLevel[Math.Min(level, xpForLevel.Length - 1)];
         }
 
+        struct Room
+        {
+            float costToReno;
+            float hardwareToReno;
+            int numCats;
+        };
+    
         int[] nextRoomLevel = { 0, 2, 5, 8, 14, 20, 30};
         int[] coinForRoom = { 0, 1000, 5000, 10000, 20000 };
         int[] hardwareForRoom = {0, 10, 50, 100, 200};

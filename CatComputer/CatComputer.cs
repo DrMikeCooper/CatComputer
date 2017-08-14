@@ -13,7 +13,7 @@ namespace CatComputer
         public int numSessions = 100;
         public float pWander = 33.3f; // chance of each cat wandering instead of playing
         CatData data = new CatData();
-        int catCost = 1000;
+        int catCost = 100000;
 
         // dynamic data during the run
         public class Room
@@ -122,6 +122,7 @@ namespace CatComputer
         // a single cat playing with the toys in it's room
         void Play(float multiplier)
         {
+            // multiply by level perhaps?
             xp += (int)(data.activeXP * multiplier);
             coin += (int)(data.activeCoin * multiplier);
         }
@@ -130,15 +131,17 @@ namespace CatComputer
         void Wander()
         {
             //accumulate hardware
-            hardware += data.wanderHardware;
+            //hardware += data.wanderHardware; // TODO random
+            //coin += RandomWanderCoin(); // TODO
 
             // might pick up a new cat if we have space
             if (dice.Next(0, 100) < data.pctNewCat )
             {
                 if (numCats < CatCapacity())
                 {
-                    numCats++;
-                    events.Add("" + sessionNumber + ": Found a cat!");
+                    // numCats++;
+                    // events.Add("" + sessionNumber + ": Found a cat!");
+                    // this costs coin
                 }
                 else
                 {
@@ -150,7 +153,7 @@ namespace CatComputer
         // do what a good player would do with their coin and resources
         void SpendResources()
         {
-            // can we buy a new cat?
+            // can we buy a new cat - TODO increase this cost per cat we own
             if (numCats < CatCapacity() && coin > catCost)
             {
                 coin -= catCost;
@@ -162,6 +165,7 @@ namespace CatComputer
             if (xp > data.GetXpForLevel(level))
             {
                 level++;
+                // TODO - level up bonuses, coins, gems, resources
 
                 // automatic - have we unlocked a new room by levelling?
                 if (level > data.GetNextRoomLevel(rooms.Count))
@@ -173,6 +177,9 @@ namespace CatComputer
                     events.Add("" + sessionNumber + ": Room " + rooms.Count + " unlocked!");
                 }
             }
+
+            // TODO do we want to buy toys?
+            // check replacing our crappest toys with better ones which unlock with level.
 
             // automatic - subtract hardware to unlock new room
             for(int i =0;i < rooms.Count; i++)
@@ -191,6 +198,8 @@ namespace CatComputer
                     break;
                 }
             }
+
+
         }
 
         // HELPER FUNCTIONS
