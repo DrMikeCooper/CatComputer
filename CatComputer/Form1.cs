@@ -17,21 +17,41 @@ namespace CatComputer
         public Form1()
         {
             InitializeComponent();
+
+
+            this.playCoinNumber.Value        = computer.data.activeCoin         ;
+            this.playXPNumber.Value          = computer.data.activeXP           ;
+            this.passiveCoinNumber.Value     = computer.data.passiveCoin        ;
+            this.passiveXPNumber.Value       = computer.data.passiveXP          ;
+            this.wanderCoinNumber.Value      = computer.data.wanderCoin         ;
+            this.wanderCoinPct.Value         = computer.data.pctWanderCoin      ;
+            this.wanderHardwareNumber.Value  = computer.data.wanderHardware     ;
+            this.wanderHardwarePct.Value     = computer.data.pctWanderHardware  ;
         }
 
         private void GoButton_Click(object sender, EventArgs e)
         {
+            computer.data.activeCoin            = (int)this.playCoinNumber.Value;
+            computer.data.activeXP              = (int)this.playXPNumber.Value;
+            computer.data.passiveCoin           = (int)this.passiveCoinNumber.Value;
+            computer.data.passiveXP             = (int)this.passiveXPNumber.Value;
+            computer.data.wanderCoin            = (int)this.wanderCoinNumber.Value;
+            computer.data.pctWanderCoin         = (int)this.wanderCoinPct.Value;
+            computer.data.wanderHardware        = (int)this.wanderHardwareNumber.Value;
+            computer.data.pctWanderHardware     = (int)this.wanderHardwarePct.Value;
+
             computer.Run();
             // hook up data to the panel
-            this.graphCoin.ShowData("Coin",computer.coinHistory);
+            this.graphCoin.ShowData("Coin",computer.coinHistory, computer.coinNeedHistory);
             this.graphLevel.ShowData("Level",computer.levelHistory);
             this.graphCats.ShowData("Cats", computer.catsHistory);
-            this.graphRooms.ShowData("Rooms", computer.roomsHistory);
-            this.graphHardware.ShowData("Hardware", computer.hardwareHistory);
+            this.graphRooms.ShowData("Rooms", computer.roomsHistory, computer.roomsHistory2);
+            this.graphHardware.ShowData("Hardware", computer.hardwareHistory, computer.hardwareNeedHistory);
             this.graphXP.ShowData("XP", computer.xpHistory);
             trackBarTime.Value = 0;
             trackBarTime.Maximum = computer.numSessions;
 
+            listBoxEvents.Items.Clear();
             for (int i = 0; i < computer.events.Count; i++)
                 listBoxEvents.Items.Add(computer.events[i]);
         }

@@ -10,23 +10,13 @@ namespace CatComputer
     class CatComputer
     {
         // settings to feed into the battle computer for each run
-        public int numSessions = 100;
+        public int numSessions = 250;
         public float pWander = 33.3f; // chance of each cat wandering instead of playing
-        CatData data = new CatData();
-        int catCost = 100000;
-
-        // dynamic data during the run
-        public class Room
-        {
-            public Room(int coin, int hw) { coinToUnlock = coin;  hardWareToUnlock = hw; }
-
-            public int coinToUnlock;
-            public int hardWareToUnlock;
-        };
+        public CatData data = new CatData();
+        int catCost = 1000;
 
         public int level = 0;
         public int numCats = 1; // number of cats we own
-        List<Room> rooms = new List<Room>(); // rooms we've unlocked, so capacity = numRooms * 5
         List<float> toys = new List<float>(); //array of xp multipliers for the toys we own, keep this sorted
         int xp; // earned by playing with cats. Automatically levels you up and opens up new rooms 
         int coin; // money
@@ -39,10 +29,13 @@ namespace CatComputer
         // data arrays
         public int[] coinHistory;
         public int[] hardwareHistory;
+        public int[] coinNeedHistory;
+        public int[] hardwareNeedHistory;
         public int[] xpHistory;
         public int[] levelHistory;
         public int[] catsHistory;
         public int[] roomsHistory;
+        public int[] roomsHistory2;
         public List<string> events = new List<string>();
 
         // do the entire run
@@ -50,7 +43,17 @@ namespace CatComputer
         {
             level = 0;
             numCats = 1;
-            rooms.Clear();
+
+            // lock all rooms except the first
+            bool first = true;
+            for (int i=0; i< data.rooms.Length; i++)
+            {
+                data.rooms[i].unlocked = first;
+                data.rooms[i].useable = first;
+                first = false;
+            }
+
+            events.Clear();
             toys.Clear();
             xp = 0;
             coin = 0;
@@ -59,12 +62,13 @@ namespace CatComputer
 
             coinHistory = new int[numSessions];
             hardwareHistory = new int[numSessions];
+            coinNeedHistory = new int[numSessions];
+            hardwareNeedHistory = new int[numSessions];
             xpHistory = new int[numSessions];
             levelHistory = new int[numSessions];
             catsHistory = new int[numSessions];
             roomsHistory = new int[numSessions];
-
-            rooms.Add(new Room(0,0));
+            roomsHistory2 = new int[numSessions];
 
             StreamWriter file = new StreamWriter("Log.csv");
             file.WriteLine("Session,Level,Rooms,Cats,Coin,Hardware, XP");
@@ -79,6 +83,9 @@ namespace CatComputer
                 levelHistory[i] = level;
                 catsHistory[i] = numCats;
                 roomsHistory[i] = GetNumRooms();
+                roomsHistory2[i] = GetNumRooms(true);
+                coinNeedHistory[i] = GetCoinNeed();
+                hardwareNeedHistory[i] = GetHWNeed();
             }
             file.Close();
         }
@@ -130,9 +137,11 @@ namespace CatComputer
         // a single cat going for a neighbourhood wander
         void Wander()
         {
-            //accumulate hardware
-            //hardware += data.wanderHardware; // TODO random
-            //coin += RandomWanderCoin(); // TODO
+            // accumulate hardware
+            if (dice.Next(0,100) < data.pctWanderHardware)
+                hardware += data.wanderHardware; 
+            if (dice.Next(0,100) < data.pctWanderCoin)
+                coin += data.wanderCoin;
 
             // might pick up a new cat if we have space
             if (dice.Next(0, 100) < data.pctNewCat )
@@ -153,10 +162,11 @@ namespace CatComputer
         // do what a good player would do with their coin and resources
         void SpendResources()
         {
+            int catPrice = catCost * numCats;
             // can we buy a new cat - TODO increase this cost per cat we own
-            if (numCats < CatCapacity() && coin > catCost)
+            if (numCats < CatCapacity() && coin > catPrice)
             {
-                coin -= catCost;
+                coin -= catPrice;
                 numCats++;
                 events.Add("" + sessionNumber + ": Bought a cat!");
             }
@@ -168,13 +178,13 @@ namespace CatComputer
                 // TODO - level up bonuses, coins, gems, resources
 
                 // automatic - have we unlocked a new room by levelling?
-                if (level > data.GetNextRoomLevel(rooms.Count))
+                for (int i = 0; i < data.rooms.Length; i++)
                 {
-                    Room r = new Room(
-                        data.GetCoinForRoom(rooms.Count),
-                        data.GetHardwareForRoom(rooms.Count));
-                    rooms.Add(r);
-                    events.Add("" + sessionNumber + ": Room " + rooms.Count + " unlocked!");
+                    if (level == data.rooms[i].unlockLevel)
+                    {
+                        events.Add("" + sessionNumber + ": Room " + i + " unlocked!");
+                        data.rooms[i].unlocked = true;
+                    }
                 }
             }
 
@@ -182,41 +192,64 @@ namespace CatComputer
             // check replacing our crappest toys with better ones which unlock with level.
 
             // automatic - subtract hardware to unlock new room
-            for(int i =0;i < rooms.Count; i++)
+            for (int i = 0; i < data.rooms.Length; i++)
             {
-                Room r = rooms[i];
-                if (r.coinToUnlock != 0 || r.hardWareToUnlock != 0)
+                CatData.Room r = data.rooms[i];
+                if (r.unlocked && !r.useable && coin >= r.coinToReno && hardware >= r.hardwareToReno)
                 {
-                    if (coin >= r.coinToUnlock && hardware >= r.hardWareToUnlock)
-                    {
-                        coin -= r.coinToUnlock;
-                        hardware -= r.hardWareToUnlock;
-                        r.coinToUnlock = 0;
-                        r.hardWareToUnlock = 0;
-                        events.Add("" + sessionNumber + ": Room " + i + " finished!");
-                    }
+                    coin -= r.coinToReno;
+                    hardware -= r.hardwareToReno;
+                    data.rooms[i].useable = true;
+                    events.Add("" + sessionNumber + ": Room " + i + " finished!");
                     break;
                 }
             }
-
-
         }
 
         // HELPER FUNCTIONS
         int CatCapacity()
         {
-            return GetNumRooms() * 5;
+            int count = 0;
+            foreach (CatData.Room r in data.rooms)
+            {
+                if (r.useable)
+                    count+=r.numCats;
+            }
+            return count;
         }
 
-        public int GetNumRooms()
+        public int GetNumRooms(bool countLocked = false)
         {
             int count = 0;
-            foreach(Room r in rooms)
+            foreach (CatData.Room r in data.rooms)
             {
-                if (r.coinToUnlock == 0 && r.hardWareToUnlock == 0)
+                if (r.useable || (countLocked && r.unlocked))
                     count++;
             }
             return count;
         }
+
+        int GetCoinNeed()
+        {
+            int count = 0;
+            foreach (CatData.Room r in data.rooms)
+            {
+                if (!r.useable && r.unlocked)
+                    count += r.coinToReno;
+            }
+            return count;
+        }
+
+        int GetHWNeed()
+        {
+            int count = 0;
+            foreach (CatData.Room r in data.rooms)
+            {
+                if (!r.useable && r.unlocked)
+                    count += r.hardwareToReno;
+            }
+            return count;
+        }
+
     }
 }

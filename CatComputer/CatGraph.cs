@@ -13,6 +13,7 @@ namespace CatControls
     public partial class CatGraph : UserControl
     {
         public int[] data;
+        public int[] data2;
         public string label;
         public int currentTime = 0;
 
@@ -21,10 +22,11 @@ namespace CatControls
             InitializeComponent();
         }
 
-        public void ShowData(string l, int[] d)
+        public void ShowData(string l, int[] d, int[] d2 = null)
         {
             label = l;
             data = d;
+            data2 = d2;
             Invalidate();
         }
 
@@ -42,6 +44,7 @@ namespace CatControls
                 return;
 
             Pen pen = new Pen(Color.Blue);
+            Pen pen2 = new Pen(Color.Red);
             Brush brush = new SolidBrush(Color.Black);
 
             float minVal = data[0];
@@ -50,9 +53,14 @@ namespace CatControls
             {
                 minVal = Math.Min(minVal, data[i]);
                 maxVal = Math.Max(maxVal, data[i]);
+                if (data2 != null)
+                {
+                    minVal = Math.Min(minVal, data2[i]);
+                    maxVal = Math.Max(maxVal, data2[i]);
+                }
             }
 
-            float yScale = (minVal == maxVal) ? 0 : ((float)Height)/(maxVal - minVal);
+            float yScale = (minVal == maxVal) ? 0 : ((float)Height)/(maxVal + 2 - minVal);
             float xScale = ((float)Width) / numPoints;
 
             e.Graphics.DrawString(label + ":" + maxVal, Control.DefaultFont, brush, new Point(5, 5));
@@ -63,6 +71,18 @@ namespace CatControls
                 if (i > 0)
                     e.Graphics.DrawLine(pen, p2, p1);
                 p2 = p1;
+            }
+            if (data2 != null)
+            {
+                p1 = new Point();
+                p2 = new Point();
+                for (int i = 0; i < numPoints; i++)
+                {
+                    p1 = new Point((int)(i * xScale), Height - 1 - (int)(data2[i] * yScale));
+                    if (i > 0)
+                        e.Graphics.DrawLine(pen2, p2, p1);
+                    p2 = p1;
+                }
             }
             p1.X = p2.X = (int)(currentTime*xScale);
             p1.Y = 0; p2.Y = Height;
