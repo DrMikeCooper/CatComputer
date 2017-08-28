@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 
 // THE STORY WE WANT
@@ -17,19 +18,19 @@ namespace CatComputer
     public class CatData
     {
         // xp accumulated per cat from just being there and from playing
-        public int passiveXP = 10;
-        public int activeXP = 50;
-        public int passiveCoin = 20;
-        public int activeCoin = 500;
+        public int passiveXP = 50;
+        public int activeXP = 200;
+        public int passiveCoin = 50;
+        public int activeCoin = 1000;
 
         // percentage of picking up a new cat from wandering
         public int pctNewCat = 10;
 
         // chance of getting coin/hardware from a wander, and the rewards
         public int pctWanderCoin = 10;
-        public int wanderCoin = 500;
+        public int wanderCoin = 1000;
         public int pctWanderHardware = 10;
-        public int wanderHardware = 5;
+        public int wanderHardware = 8;
 
         // xp to level up (Kimbos HayDay data)
         int[] xpForLevel = {
@@ -117,7 +118,7 @@ namespace CatComputer
         // the best toy multiplier available at each level
         public float GetToyMultForLevel(int level)
         {
-            return 1.1f + 0.1f * (level / 10);
+            return 1.1f + 0.05f * (level / 5);
         }
 
         // the cost of a toy with a given rank
@@ -157,32 +158,51 @@ namespace CatComputer
         };
 
         public Room[] rooms = {
-new Room( 0, 0       ,0      ,0  ,5  ),
-new Room( 1, 12000   ,30     ,4  ,5  ),
-new Room( 3, 45000   ,15     ,1  ,7  ),
-new Room( 6, 20000   ,70     ,6  ,5  ),
-new Room( 8, 100000  ,160    ,5  ,8  ),
-new Room(11, 60000   ,100    ,10 ,5  ),
-new Room(14, 90000   ,115    ,4  ,7  ),
-new Room(15, 75000   ,250    ,6  ,5  ),
-new Room(18, 85000   ,90     ,3  ,6  ),
-new Room(21, 68000   ,250    ,5  ,5  ),
-new Room(24, 125000  ,200    ,12 ,8  ),
-new Room(27, 85000   ,160    ,10 ,7  ),
-new Room(32, 62000   ,195    ,20 ,6  ),
-new Room(36, 35000   ,280    ,15 ,5  ),
-new Room(40, 42000   ,280    ,8  ,5  ),
-new Room(45, 120000  ,240    ,15 ,7  ),
-new Room(49, 38000   ,355    ,15 ,5  ),
-new Room(54, 97000   ,255    ,20 ,7  ),
-new Room(58, 45000   ,250    ,20 ,5  ),
-new Room(62, 54000   ,120    ,21 ,5  ),
-new Room(66, 26000   ,320    ,15 ,5  ),
-new Room(70, 106000  ,420    ,15 ,8  ),
-new Room(74, 53000   ,325    ,20 ,6  ),
-new Room(78, 86000   ,600    ,20 ,7  ),
-new Room(82, 140000  ,420    ,30 ,8  ),
+//new Room( 0, 0       ,0      ,0  ,5  ),
+//new Room( 1, 12000   ,30     ,4  ,5  ),
+//new Room( 3, 45000   ,15     ,1  ,7  ),
+//new Room( 6, 20000   ,70     ,6  ,5  ),
+//new Room( 8, 100000  ,160    ,5  ,8  ),
+//new Room(11, 60000   ,100    ,10 ,5  ),
+//new Room(14, 90000   ,115    ,4  ,7  ),
+//new Room(15, 75000   ,250    ,6  ,5  ),
+//new Room(18, 85000   ,90     ,3  ,6  ),
+//new Room(21, 68000   ,250    ,5  ,5  ),
+//new Room(24, 125000  ,200    ,12 ,8  ),
+//new Room(27, 85000   ,160    ,10 ,7  ),
+//new Room(32, 62000   ,195    ,20 ,6  ),
+//new Room(36, 35000   ,280    ,15 ,5  ),
+//new Room(40, 42000   ,280    ,8  ,5  ),
+//new Room(45, 120000  ,240    ,15 ,7  ),
+//new Room(49, 38000   ,355    ,15 ,5  ),
+//new Room(54, 97000   ,255    ,20 ,7  ),
+//new Room(58, 45000   ,250    ,20 ,5  ),
+//new Room(62, 54000   ,120    ,21 ,5  ),
+//new Room(66, 26000   ,320    ,15 ,5  ),
+//new Room(70, 106000  ,420    ,15 ,8  ),
+//new Room(74, 53000   ,325    ,20 ,6  ),
+//new Room(78, 86000   ,600    ,20 ,7  ),
+//new Room(82, 140000  ,420    ,30 ,8  ),
 };
+
+        public void LoadRooms()
+        {
+            List<Room> newRooms = new List<Room>();
+
+            StreamReader file = new StreamReader("Rooms.txt");
+            
+            while (!file.EndOfStream)
+            {
+                string line = file.ReadLine();
+                string[] parts = line.Split(',');
+                newRooms.Add(new Room(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]), int.Parse(parts[3]), int.Parse(parts[4])));
+            }
+            file.Close();
+
+            rooms = new Room[newRooms.Count];
+            for (int i = 0; i < rooms.Length; i++)
+                rooms[i] = newRooms[i];
+        }
 
         int[] nextRoomLevel = { 0, 2, 5, 8, 14, 20, 30};
         int[] coinForRoom = { 0, 1000, 5000, 10000, 20000 };

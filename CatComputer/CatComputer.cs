@@ -10,7 +10,7 @@ namespace CatComputer
     class CatComputer
     {
         // settings to feed into the battle computer for each run
-        public int numSessions = 250;
+        public int numSessions = 380;
         public float pWander = 33.3f; // chance of each cat wandering instead of playing
         public CatData data = new CatData();
         int catCost = 1000;
@@ -41,6 +41,8 @@ namespace CatComputer
         // do the entire run
         public void Run()
         {
+            data.LoadRooms();
+
             level = 0;
             numCats = 1;
 
