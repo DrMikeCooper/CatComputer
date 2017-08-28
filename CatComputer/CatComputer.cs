@@ -154,7 +154,7 @@ namespace CatComputer
                 }
                 else
                 {
-                    events.Add("" + sessionNumber + ": Turned away a stray!");
+                    //events.Add("" + sessionNumber + ": Turned away a stray!");
                 }
             }
         }
@@ -163,7 +163,7 @@ namespace CatComputer
         void SpendResources()
         {
             int catPrice = catCost * numCats;
-            // can we buy a new cat - TODO increase this cost per cat we own
+            // can we buy a new cat - increase this cost per cat we own
             if (numCats < CatCapacity() && coin > catPrice)
             {
                 coin -= catPrice;
@@ -188,8 +188,36 @@ namespace CatComputer
                 }
             }
 
-            // TODO do we want to buy toys?
             // check replacing our crappest toys with better ones which unlock with level.
+            float rank = data.GetToyMultForLevel(level);
+            int cost = data.GetToyCost(rank);
+
+            if (toys.Count < numCats)
+            {
+                if (cost < coin)
+                {
+                    coin -= cost;
+                    toys.Add(rank);
+                    toys.Sort();
+                    toys.Reverse();
+                    events.Add("" + sessionNumber + ": Bought Toy " + rank);
+                }
+            }
+            else
+            {
+                if (rank > toys[toys.Count - 1])
+                {
+                    if (cost < coin)
+                    {
+                        float oldRank = toys[toys.Count - 1];
+                        coin -= cost;
+                        toys[toys.Count - 1] = rank;
+                        toys.Sort();
+                        toys.Reverse();
+                        events.Add("" + sessionNumber + ": Replaced Toy " + oldRank + "->" + rank);
+                    }
+                }
+            }
 
             // automatic - subtract hardware to unlock new room
             for (int i = 0; i < data.rooms.Length; i++)

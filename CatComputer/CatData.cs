@@ -113,7 +113,20 @@ namespace CatComputer
 80000,
 85000,
         };
-     
+
+        // the best toy multiplier available at each level
+        public float GetToyMultForLevel(int level)
+        {
+            return 1.1f + 0.1f * (level / 10);
+        }
+
+        // the cost of a toy with a given rank
+        public int GetToyCost(float mult)
+        {
+            int rank = (int)(10.0f * (mult - 1.0f));
+            return rank * rank * 1000;
+        }
+
         public int GetXpForLevel(int level)
         {
             int total = 0;
