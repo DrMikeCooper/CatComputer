@@ -170,7 +170,7 @@ namespace CatComputer
             {
                 coin -= catPrice;
                 numCats++;
-                events.Add("" + sessionNumber + ": Bought a cat!");
+               // events.Add("" + sessionNumber + ": Bought a cat!");
             }
 
             // automatic - have we levelled up?
@@ -202,7 +202,7 @@ namespace CatComputer
                     toys.Add(rank);
                     toys.Sort();
                     toys.Reverse();
-                    events.Add("" + sessionNumber + ": Bought Toy " + rank);
+                    //events.Add("" + sessionNumber + ": Bought Toy " + rank);
                 }
             }
             else
@@ -216,7 +216,7 @@ namespace CatComputer
                         toys[toys.Count - 1] = rank;
                         toys.Sort();
                         toys.Reverse();
-                        events.Add("" + sessionNumber + ": Replaced Toy " + oldRank + "->" + rank);
+                       // events.Add("" + sessionNumber + ": Replaced Toy " + oldRank + "->" + rank);
                     }
                 }
             }

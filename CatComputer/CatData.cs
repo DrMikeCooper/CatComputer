@@ -189,7 +189,7 @@ namespace CatComputer
         {
             List<Room> newRooms = new List<Room>();
 
-            StreamReader file = new StreamReader("Rooms.txt");
+            StreamReader file = new StreamReader("../../Rooms.txt");
             
             while (!file.EndOfStream)
             {
